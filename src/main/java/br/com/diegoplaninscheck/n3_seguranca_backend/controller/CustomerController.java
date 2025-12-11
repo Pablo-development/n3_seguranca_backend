@@ -7,15 +7,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
 
     private final CustomerService customerService;
 
-
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
+    }
+
+    @PreAuthorize("hasRole('USER_GET') || hasRole('admin')")
+    @Operation(summary = "List all Customer")
+    @GetMapping()
+    public ResponseEntity<List<Customer>> listAllCustomers() {
+        return ResponseEntity.ok(customerService.findAll());
     }
 
     @PostMapping("/create")
@@ -25,7 +33,7 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.createCustomer(customer));
     }
 
-        @PutMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('USER_UPDATE') || hasRole('admin')")
     @Operation(summary = "Update Customer")
     public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customer){
@@ -35,5 +43,13 @@ public class CustomerController {
         catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PreAuthorize("hasRole('USER_DELETE') || hasRole('admin')")
+    @Operation(summary = "Delete Customer")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<List<Customer>> deleteCustomer(@PathVariable Long id) {
+        customerService.delete(id);
+        return ResponseEntity.status(204).body(customerService.findAll());
     }
 }

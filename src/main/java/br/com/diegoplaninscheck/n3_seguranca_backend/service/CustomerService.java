@@ -2,11 +2,9 @@ package br.com.diegoplaninscheck.n3_seguranca_backend.service;
 
 import br.com.diegoplaninscheck.n3_seguranca_backend.Repository.CustomerRepository;
 import br.com.diegoplaninscheck.n3_seguranca_backend.model.Customer;
-import br.com.diegoplaninscheck.n3_seguranca_backend.model.OrderItem;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class CustomerService {
@@ -17,8 +15,16 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
+    public List<Customer> findAll() {
+        return customerRepository.findAll();
+    }
+
     public Customer createCustomer(Customer customer) {
         return customerRepository.save(customer);
+    }
+
+    public void delete (Long id) {
+        customerRepository.deleteById(id);
     }
 
     public Customer update(Long id, Customer newCustomer) {
